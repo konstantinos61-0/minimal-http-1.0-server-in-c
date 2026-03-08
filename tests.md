@@ -11,7 +11,7 @@ Replace `8080` with the actual port the server is running on.
 http://localhost:8080/                      // 200 OK (serves /index.html)  
 http://localhost:8080/page.html             // 200 OK (serves /page.html)  
 http://localhost:8080/another_page.html     // 404 Not Found  
-http://localhost:8080/search                // 301 Moved Permanently, Location: /search/  
+http://localhost:8080/search                // 301 Moved Permanently, Location: /search/ (browser automatically makes the new request)  
 http://localhost:8080/search/               // 200 OK (serves /search/index.html)  
 http://localhost:8080/letter/               // 403 Forbidden 
 ```
@@ -35,17 +35,16 @@ GETTING / HTTP/1.0              // 400 Bad Request
 ```
 GET page.html HTTP/1.0          // 400 Bad Request
 
-
 GET /path/over/256/bytes        // 400 Bad Request (replace the path with an actually long one)
 
-
 GET /../ HTTP/1.0               // 403 Forbidden
+
+GET /search HTTP/1.0            // 301 Moved Permanently
 ```
 
 **Version Testing**
 ```
 GET / HTT/1.0                   // 400 Bad Request
-
 
 GET / HTTP/2.0                  // 400 Bad Request
 ```
