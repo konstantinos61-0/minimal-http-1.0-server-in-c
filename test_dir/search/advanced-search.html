@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Search</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+        <link rel="stylesheet" href="style-adv.css">
+    </head>
+    <body>
+        <div class="top-container">
+            <header>
+                <nav>
+                    <a href="index.html">Google Search</a>
+                </nav>
+            </header>
+
+            <main>
+                <h2 id="google">Advanced Search</h2>
+                <form action="https://www.google.com/search">
+                    <div class="row">
+                        <label for="as_q" class="col-6 col-form-label">all these words:</label>
+                        <div class="col-6">
+                            <input class="form-control" type="text" name="as_q">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="as_epq" class="col-6 col-form-label">this exact word or phrase:</label>
+                        <div class="col-6">
+                            <input class="form-control" type="text" name="as_epq">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="as_oq" class="col-6 col-form-label">any of these words:</label>
+                        <div class="col-6">
+                            <input class="form-control" type="text" name="as_oq">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="as_eq" class="col-6 col-form-label">none of these words:</label>
+                        <div class="col-6">
+                            <input class="form-control" type="text" name="as_eq">
+                        </div>
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Google Search">
+                </form>
+            </main>
+            <footer></footer>
+        </div>
+    </body>
+</html>

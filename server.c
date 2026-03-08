@@ -27,16 +27,16 @@ int main(int argc, char *argv[])
     // Root directory configuration
     if ((root_dir = open(argv[1], O_RDONLY)) == -1)
     {
-        perror("root dir open error");
+        perror("server root dir open");
         return 3;
     }
 
     if ((server_sockfd = bind_to_port(AF_UNSPEC, SOCK_STREAM, port)) == -1) // socket & bind call
-        return 4;
+        return 4; // perror is called inside bind_to_port
 
-    if (listen(server_sockfd, BACKLOG) == -1) // listen call
+    if (listen(server_sockfd, BACKLOG) == -1) 
     {
-        perror("server error(listen): ");
+        perror("server listen");
         return 5;
     }
 
@@ -48,15 +48,15 @@ int main(int argc, char *argv[])
     if (sigaction(SIGCHLD, &act, NULL) == -1) // set act as the sigaction of SIGCHLD
     {
         perror("server sigaction");
-        exit(6);
+        return 6;
     }
     while (1) 
-    { // Accept Loop, blocking call socketfd mode
+    { // Accept Loop, socketfd mode: block. (default)
         addrlen = sizeof(struct sockaddr_storage);
-        if ((client_sockfd = accept(server_sockfd, (struct sockaddr *) &their_addr, &addrlen)) == -1) 
+        if ((client_sockfd = accept(server_sockfd, (struct sockaddr *) &their_addr, &addrlen)) == -1) // blocking call
         {
-            perror("server error(accept): ");
-            continue;
+            perror("server accept");
+            continue; // if accept fails, continue to next queued connection.
         }
         if (their_addr.ss_family == AF_INET)
         {
@@ -71,7 +71,6 @@ int main(int argc, char *argv[])
         int child_id;
         if ((child_id = fork()) == 0)
         { // Inside child process
-            // Handle connection
             close(server_sockfd); // child doesn't need the listener 
             handle_connection(client_sockfd, root_dir);
             close(client_sockfd);
@@ -84,18 +83,19 @@ int main(int argc, char *argv[])
         }
         close(client_sockfd); // parent doesn't need the client socket
     }
+    // cleanup
     close(server_sockfd);
     close(root_dir);
     return 0;
 }
 
 
-// Handler for the SIGCHLD signal (child termination) so that server clears any zombie processes.
+// Handler for the SIGCHLD signal (child termination) so that the server cleans up any zombie processes.
 void sigchld_handler(int signo)
 {
     (void)signo; // quiet the warning about unused signo variable.
 
     int restore_errno = errno;
-    while(waitpid(-1, NULL, WNOHANG) > 0); // Non-blocking call, wait for any child process.
+    while(waitpid(-1, NULL, WNOHANG) > 0); // Non-blocking call, wait any terminated child process.
     errno = restore_errno; // Restore global errno in case waitpid changed it.
 }

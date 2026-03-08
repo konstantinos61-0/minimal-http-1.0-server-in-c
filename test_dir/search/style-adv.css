@@ -1,0 +1,105 @@
+/* Typography */
+body {
+    font-size: max(1.2rem, 1vw);
+}
+
+#google {
+    text-align: left;
+    font-size: clamp(1.5rem, 2.5vw, 2.8rem);
+    color: #e87b54;
+}
+
+nav a {
+    line-height: 28px;
+}
+
+nav a:link,
+nav a:visited {
+    color: #666;
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: #8b9c3b;
+    text-decoration: underline;
+}
+
+h2 sub {
+    font-size: 2rem;
+}
+
+form label.col-form-label {
+    font-size: max(0.95rem, 1.3vw);
+}
+/* General Spacing/Sizing */
+body {
+    margin: 0px;
+}
+
+nav {
+    padding: 10px;
+}
+
+nav a {
+    display: inline-block;
+    padding: 5px;
+}
+
+h2 {
+    text-align: center;
+}
+
+#google {
+    margin: 10px 0px;
+    padding: 10px;
+    border-bottom: 1px gray solid;
+}
+
+/* Top hierarchy flexbox layout */
+.top-container {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100vh;
+}
+
+.top-container > header {
+    flex: 1 48px;
+}
+
+.top-container > main {
+    flex: 1 400px;
+}
+
+.top-container > footer {
+    flex: 5 100px;
+}
+
+/* Header/Main As Flexboxes */
+.top-container > header {
+    display: flex;
+    flex-flow: row-reverse nowrap;
+}
+
+.top-container > main {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: start;
+}
+
+/* Form Layout */
+form {
+    padding: 10px;
+    width: 90%;
+    max-width: 700px;
+    margin: 0px auto;
+    position: relative;
+}
+
+form input[type="submit"] {
+    position: absolute;
+    right: 12px;
+}
+
+form div[class="row"] {
+    margin-bottom: 10px;
+}

@@ -83,10 +83,10 @@ int bind_to_port(int family, int socktype, const char *port);
 void *get_sin_addr(struct sockaddr *p);
 
 // Helper functions associated with request/response handling
-int fill_response_headers(int filefd, char *filename, header_node **list, int *msg_len);
+int fill_response_headers(int filefd, char *filename, char *uri, header_node **list, response_line *r);
 int read_request(int client_sockfd, char **buf, int *len);
 char *mime_type(char *filename);
-int serve_error_template(int client_fd, int filefd, char *msg, char *filename);
+int serve_error_template(int client_sockfd, int filefd, char *uri,  response_line *r, char *filename, char *tag);
 void print_list(header_node *list);
 void push_node(header_node **list, header_node *n);
 void free_list(header_node *list);

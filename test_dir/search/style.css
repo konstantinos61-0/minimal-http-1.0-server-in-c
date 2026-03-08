@@ -1,0 +1,103 @@
+/* Typography */
+body {
+    font-size: max(1.2rem, 1.2vw);
+}
+
+#google {
+    font-size: clamp(3rem, 15vw, 6rem);
+    color: #0a8246;
+}
+
+nav a {
+    line-height: 28px;
+}
+
+h2 sub {
+    font-size: 2rem;
+}
+
+nav a:link,
+nav a:visited {
+    color: #666;
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: #8b9c3b;
+    text-decoration: underline;
+}
+
+/* General Spacing/Sizing */
+body {
+    margin: 0px;
+}
+
+nav {
+    padding: 10px;
+}
+
+nav a {
+    display: inline-block;
+    padding: 5px;
+}
+
+#google {
+    margin: 10px 0px;
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+}
+
+
+/* Top hierarchy flexbox layout */
+.top-container {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100vh;
+}
+
+.top-container > header {
+    flex: 1 48px;
+}
+
+.top-container > main {
+    flex: 1 400px;
+}
+
+.top-container > footer {
+    flex: 5 100px;
+}
+
+/* Header/Main As Flexboxes */
+.top-container > header {
+    display: flex;
+    flex-flow: row-reverse nowrap;
+}
+
+.top-container > main {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: end;
+}
+
+/* Form Layout */
+form {
+    padding: 10px;
+    width: 90%;
+    max-width: 500px;
+    margin: 0px auto;
+}
+
+.form-buttons > input {
+    margin-top: 10px;
+    margin-left: 10px;
+    background-color: #c2d950;
+    border: #c2d950;
+    min-width: 140px;
+}
+.form-buttons > input:hover {
+    background-color: #8b9c3b;
+    border: #8b9c3b;
+}

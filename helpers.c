@@ -1,8 +1,8 @@
 #include "server.h"
 
-#define SUPP_RESP_HEADS 3
+#define SUPP_RESP_HEADS 4
 char *supported_response_headers[] = {
-    "content-type", "content-length", "connection" // In a chosen canonical form of all lowercase, for use in comparisons etc.
+    "content-type", "content-length", "connection", "location" // Stored in a chosen canonical form of all lowercase.
 };
 
 /*
@@ -32,23 +32,23 @@ int bind_to_port(int family, int socktype, const char *port)
     // Search linked list and bind to the first socket address you can.
     for (p = res; p != NULL; p = p->ai_next)
     {
-        // try to get socket
+        // socket call
         if ((server_sockfd = socket(p->ai_family, p->ai_socktype, 0)) == -1)
         {
-            perror("server socket: ");
+            perror("server socket");
             continue;
         }
-        // Immediate reuse of addresses in bind (useful on quick program restarts)
+        // Enable immediate reuse of addresses in bind (useful on quick program restarts)
         if (setsockopt(server_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
         {
             perror("server setsockopt");
             close(server_sockfd);
             continue;
         }
-        // try to bind socket to a local port
+        // bind socket to a local port
         if (bind(server_sockfd, p->ai_addr, p->ai_addrlen) == -1)
         {
-            perror("server bind: ");
+            perror("server bind");
             close(server_sockfd);
             continue;
         }
@@ -86,7 +86,7 @@ void *get_sin_addr(struct sockaddr *sa)
 
 
 /*
-    Attempt to send len ammount of bytes from buf to sockfd through the network connection
+    Attempt to send len ammount of bytes from buffer buf to sockfd through the socket.
     At success return 0. At send error return -1. 
     In any case, len is set to the number of bytes actually sent.
 */
@@ -95,7 +95,7 @@ int send_all(int client_sockfd, char *buf, int *len)
     int bytes_total = 0, bytes_sent;
     while (bytes_total < *len)
     {
-        // try to send data
+        // send data
         bytes_sent = send(client_sockfd, buf + bytes_total, *len - bytes_total, 0);
         if (bytes_sent == -1)
         {
@@ -112,20 +112,11 @@ int send_all(int client_sockfd, char *buf, int *len)
 
 /*
     Reads the HTTP request into a dynamically sized buffer and sets *len to the actual size of the request.
-    On error, returns an integer status code and possibly logs an error message on stderr.
-    Error Codes:
-    -1: Server code error (meaning other than recv)
+    On error, returns a negative integer status code and possibly logs an error message on stderr.
+    Error Codes semantics:
+    -1: Any server error other than recv.
     -2: Client error: Recv error or premature client connection close. 
     -3: Request exceeded allowed size limit. 
-
-    Algorithm
-    1. While (total bytes read < buffer length && there are bytes available in the socket stream)
-        2. Read the bytes into the buffer by only loading them after the last read character of last loop's repetition.
-        3. If CRLF CRLF is found in the buffer
-            4. Set *len to the total bytes and return 0;
-    5. If buffer is full, print error on stderr and return -1
-    6. If recv caused an error, print error on stderr, return -1
-    7. Else if client closed connection, print error on stderr, return -1 
 */
 int read_request(int client_sockfd, char **buf, int *len)
 {
@@ -171,23 +162,24 @@ int read_request(int client_sockfd, char **buf, int *len)
     }
 }
 
-// Inserts header_node n into the top of the header_node stack (linked list)
-// On success, returns the pointer to the first list item (pointed to by list variable)
+// Inserts header node n onto the top of the header_node stack (linked list)
 void push_node(header_node **list, header_node *n)
 {
-    header_node *tmp = *list; // Save the 1st item (where list points) in a tmp var
-    *list = n; // Make list point to the new header node n
-    n->next = tmp; // Make n point to the tmp to stitch the list back in the correct way   
+    header_node *tmp = *list; // Save the 1st list item (where list points) in a tmp var
+    *list = n; 
+    n->next = tmp;   
 }
 
-// Prints the linked list of header nodes
+// Prints the provided header node linked list to the stdout.
 void print_list(header_node *list)
 {
+    printf("Printing the headers of the request...\n");
     for (header_node *p = list; p != NULL; p = p->next)
         printf("%s: %s\n", p->header_field, p->header_value);
+    printf("Finished printing headers\n");
 }
 
-// Frees the linked list of header nodes
+// Frees the provided header node linked list of header nodes
 void free_list(header_node *list)
 {
     header_node *ptr = list;
@@ -199,10 +191,12 @@ void free_list(header_node *list)
     }
 }
 
-// Fills list with supported, valid response headers. Systematic Response header handling
-// On success returns 0, on error returns -1. (when errors occured in neccessary headers)
-// -1 corresponds to closing connection without pursuing further sends.
-int fill_response_headers(int filefd, char *filename, header_node **list, int *msg_len)
+/*
+    Fills the provided list with supported, properly formatted headers to respond with.
+    On success returns 0, on error returns -1. (when errors occured in neccessary headers)
+    -1 corresponds to closing connection without pursuing further sends.    
+*/
+int fill_response_headers(int filefd, char *filename, char *uri, header_node **list, response_line *r)
 {
     for (int i = 0; i < SUPP_RESP_HEADS; i++)
     {
@@ -234,36 +228,52 @@ int fill_response_headers(int filefd, char *filename, header_node **list, int *m
                 return -1;
             strcpy(n->header_field, "Content-Length");
             // Find length
-            int len = 11;
-            char length_s[len]; // Serves files up to (< 10) Giga bytes
+            int digits = 11;
+            char length_s[digits]; // Serves files up to (< 10) Giga bytes
             int size;
-            long int length = (msg_len) ? (statbuf.st_size + *msg_len) : statbuf.st_size;
-            if ((size = snprintf(length_s, len,"%li", length)) < 0 || size >= len)
+            long int length = (r->code != 200) ? (statbuf.st_size + strlen(r->msg)) : statbuf.st_size; //  Adds msg length since that's filled into the error template before sending it.
+            if ((size = snprintf(length_s, digits,"%li", length)) < 0 || size >= digits)
                 return -1; 
             strcpy(n->header_value, length_s);
+            push_node(list, n);
+        }
+        else if (!strcmp(supported_response_headers[i], "location") && r->code == 301)
+        {
+            int redirection_len = strlen(uri) + 2; // +1 for null, +1 for trailling slash
+            int size;
+            char redirection[redirection_len];
+            header_node *n = malloc(sizeof(header_node));
+            if (n == NULL)
+                return -1;
+            strcpy(n->header_field, "Location");
+            if ((size = snprintf(redirection, redirection_len, "%s/", uri)) < 0 || size >= redirection_len)
+                return -1;
+            strcpy(n->header_value, redirection);
             push_node(list, n);
         }
     }
     return 0;
 }
 
-
-// Returns the MIME/type of filename
+// Returns the MIME/Content-Type of the given filename
 char *mime_type(char *filename)
 {
     int ext_len;
-    char *ext, *dot;
-    if ((dot = strstr(filename, ".")) == NULL)
+    char *ext, *dot, *last_dot, *search;
+    search = filename;
+    last_dot = NULL;
+    while ((dot = strstr(search, ".")) != NULL) // Find the last dot inside filename, which indicates the file's type
+    {
+        last_dot = dot;
+        search = last_dot + 1;
+    }
+    if (last_dot == NULL)
         return "application/octet-stream";
-    ext= dot + 1;
+    ext= last_dot + 1; // points to the start of the extension 
     ext_len = strlen(ext);
-    if (ext_len == 0)
-        return "application/octet-stream";
     char lowerc_ext[ext_len + 1];
     for (int i = 0; i < ext_len + 1; i++)
-    {
         *(lowerc_ext + i) = tolower(*(ext + i));
-    }
     if (!strcmp(lowerc_ext, "html"))
         return "text/html";
     else if (!strcmp(lowerc_ext, "jpeg") || !strcmp(lowerc_ext, "jpg"))
@@ -283,31 +293,24 @@ char *mime_type(char *filename)
 }
 
 /*
-    Sends the filefd's contents to the client socket as well as all response headers beforehand.
-    after inserting msg into the  <p id="msg"> tag of the file. 
-    In the function's use inside this project, filefd is always passed as the error.html template in the templates folder,
-    which grants knowledge about the contents that the function is handling.
+    Sends the following through the socket: the headers and the filefd's contents,
+    after insterting r->msg into the filefd's html given tag. 
+    Inside the project, this function is only used with the template error.html template as filefd,
+    which contains a well-known paragraph tag for this purpose. 
     Returns 0 on success, -1 on error.
     -1 corresponds to not pursuing further sends and closing connection
 */  
-int serve_error_template(int client_sockfd, int filefd, char *msg, char *filename)
+int serve_error_template(int client_sockfd, int filefd, char *uri,  response_line *r, char *filename, char *tag)
 {
-    /*
-        1. Read until you find the <p id="msg"> memory chunck inside error.html, sending everything you read into the socket.
-        2. Save the amount of bytes read until the p tag
-        2. Send the msg 
-        3. Set offset of filefd to the saved value
-        4. Send the rest of the file to the socket (the rest of the original file, closing the <p> tag on the way)
-    */
-    int msg_len = strlen(msg), offset = 0, bytes_read;
-    char *tag = "<p id=\"msg\"", *p = NULL;
+    int msg_len = strlen(r->msg), offset = 0, bytes_read;
+    char *p = NULL;
     char buf[BUFF_SIZE * sizeof(char)];
     header_node *res_h_list = NULL;
 
     // Send response headers
-    if (fill_response_headers(filefd, filename, &res_h_list, &msg_len) == -1) // Fill and send response headers
+    if (fill_response_headers(filefd, filename, uri, &res_h_list, r) == -1) // Fill and send response headers
         return -1;  
-    // Loop into linked list and send each
+    // Loop into linked list and send each header
     for (header_node *p = res_h_list; p != NULL; p = p->next)
     {
         int header_len = MAX_HEADER_FIELD + MAX_HEADER_VALUE + 5; // +4 for the 4 extra chars other than field, value and +1 for '\0'
@@ -328,8 +331,8 @@ int serve_error_template(int client_sockfd, int filefd, char *msg, char *filenam
     {
         if ((p = memmem(buf, bytes_read, tag, strlen(tag))) != NULL)
         {
-            int offset_inc = (p - buf + 1) + strlen(tag);
-            offset = offset + offset_inc; // offset equals the amount of bytes read before reaching the end of the opening tag (last char included).
+            int offset_inc = (p - buf) + strlen(tag);
+            offset = offset + offset_inc; // set offset to the amount of bytes read until the end of the opening tag.
             if (send_all(client_sockfd, buf, &offset_inc) == -1)
                 return -1;
             break;
@@ -345,7 +348,7 @@ int serve_error_template(int client_sockfd, int filefd, char *msg, char *filenam
     if (bytes_read == -1)
         return -1;
     
-    if (send_all(client_sockfd, msg, &msg_len) == -1)
+    if (send_all(client_sockfd, r->msg, &msg_len) == -1)
         return -1; 
 
     if (lseek(filefd, offset, SEEK_SET) == -1)
