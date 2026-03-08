@@ -84,7 +84,12 @@ Containts utility functions used throughout all other source files. Specifically
 
 
 ### General 
-In case of any  function/sys call error or failure to meet the requirements checks, logs are produced to the stderr stream. Some diagnostic information is also output to stdout throughout the program. Clean up is performed regularly on any open file descriptors and heap allocated memory. Valgrind was used to make the program runs memcheck clean.
+In case of any  function/sys call error or failure to meet the requirements checks, logs are produced to the stderr stream. Some diagnostic information is also output to stdout throughout the program. Clean up is performed regularly on any open file descriptors and heap allocated memory. Valgrind was used to make the program runs memcheck clean. 
 
-#### Testing headers
-The print_list function is only used for testing purposes. Specifically, it is placed right after the request parsing and it prints all of the headers of the request. This way one can ensure that headers are handled as promised by the specification. 
+### Testing
+
+#### Headers
+The print_list function is only used for testing purposes. Specifically, it is placed right after the request parsing and it prints all of the headers of the request. This way one can ensure that headers are handled as promised by the specification.
+
+#### Permissions
+Modify permissions with command "chmod" to any file inside test_dir in order to test the 403 response.
