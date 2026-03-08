@@ -17,6 +17,7 @@ The following features from the RFC 1945 specification are implemented:
 - **request headers**: Accept and store any properly formatted request headers.
 - **response headers**: Always respond with the headers: Content-Length, Content-Type, Connection (value=close always, as persistent connections aren't supported). Include the Location header when necessary.  
 - **URIs**: absolute path form 
+
 Server accepts HTTP/1.1 version tokens but responds with version 1.0.
 
 ## Source File Organization
