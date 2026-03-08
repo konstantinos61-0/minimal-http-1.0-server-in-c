@@ -1,8 +1,8 @@
-# HTTP/1.0 server program (partial implementation)
-
+# HTTP/1.0 server in C (partial implementation)
 ## Overview
-
-This project is a CLI program written in C. It is an http server program for serving static files from the host machine. More specifically, it's a partial implementation of HTTP/1.0 over TCP connections in the Internet Domain (IP Addresses) utilizing the Linux socket interface. The choice of the older version 1.0 was deliberate. I believe it balances my project's scope between it being a valuable learning experience for me while also remaining relevant to real world work. Running "make" builds the executable file named "server".
+This project is a CLI program written in C. It is an http server program for serving static files from the host machine. More specifically, it's a partial implementation of HTTP/1.0 over TCP connections in the Internet Domain (IP Addresses) utilizing the Linux socket interface. The choice of the older version 1.0 was deliberate. I believe it balances my project's scope between it being a valuable learning experience for me while also remaining relevant to real world work. Running "make" builds the executable file named "server".  
+  
+**Video Demo**: <url>
 
 **Program Usage**: path/to/server root_dir [port]  
 - **server**: the executable file name produced by make
