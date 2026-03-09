@@ -87,6 +87,6 @@ int fill_response_headers(int filefd, char *filename, char *uri, header_node **l
 int read_request(int client_sockfd, char **buf, int *len);
 char *mime_type(char *filename);
 int serve_error_template(int client_sockfd, int filefd, char *uri,  response_line *r, char *filename, char *tag);
-void print_list(header_node *list);
+void log_headers(FILE *logfile, header_node *list, char *method, char *filename);
 void push_node(header_node **list, header_node *n);
 void free_list(header_node *list);

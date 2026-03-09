@@ -124,7 +124,14 @@ void handle_connection(int client_sockfd, int root_dir)
     } // End Request-Line Parser Loop
     
     free(req_buf); // Don't need request buffering after parsing it.
-    print_list(req_h_list); // Print the stored headers of the request!! 
+    
+    // log the request headers inside a log directory.
+    FILE *logfile;
+    if ((logfile = fopen("logs/header_logs.txt", "a")) == NULL)
+        logfile = stdout; 
+    log_headers(logfile, req_h_list, method, filename_original); 
+    if (logfile != NULL)
+        fclose(logfile); 
 
     // Set results variable according to the request parser's outcome (e.g. c200 for 200 OK)
     if (state == LF_F)

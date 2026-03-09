@@ -170,13 +170,13 @@ void push_node(header_node **list, header_node *n)
     n->next = tmp;   
 }
 
-// Prints the provided header node linked list to the stdout.
-void print_list(header_node *list)
+// Logs the headers of a request inside list into the logfile.
+void log_headers(FILE *logfile, header_node *list, char *method, char *filename)
 {
-    printf("Printing the headers of the request...\n");
+    fprintf(logfile, "Printing the headers of the %s request for the resource: %s...\n", method, filename);
     for (header_node *p = list; p != NULL; p = p->next)
-        printf("%s: %s\n", p->header_field, p->header_value);
-    printf("Finished printing headers\n");
+        fprintf(logfile, "%s: %s\n", p->header_field, p->header_value);
+    fprintf(logfile, "Finished printing headers\n\n");
 }
 
 // Frees the provided header node linked list of header nodes
