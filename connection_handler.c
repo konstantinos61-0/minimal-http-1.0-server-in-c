@@ -84,7 +84,7 @@ void handle_connection(int client_sockfd, int root_dir)
     // Character Input, consumed one char at a time.
     char *current = req_buf;
 
-    while (current < (req_buf + req_len) && state < LF_F) // Request-Line Parser Loop
+    while (current < (req_buf + req_len) && state < SUCCESS_GET) // Request-Line Parser Loop
     {
         old_state = state; // For determining the state before and after some transitions
         switch (state)
@@ -134,7 +134,7 @@ void handle_connection(int client_sockfd, int root_dir)
         fclose(logfile); 
 
     // Set results variable according to the request parser's outcome (e.g. c200 for 200 OK)
-    if (state == LF_F)
+    if (state == SUCCESS_GET)
     {
         if (strstr(uri, "..") != NULL) // Test for forbidden directory traversal
             results =  c403;

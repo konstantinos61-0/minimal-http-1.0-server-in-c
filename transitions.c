@@ -217,7 +217,7 @@ void hval_trans(char current, enum states *state, int *n, header_node *node, hea
 void cr_f_trans(char current, enum states *state)
 {
     if (current == '\n')
-        *state = LF_F;
+        *state = SUCCESS_GET;
     else
         *state = FAILURE_400;
 }
