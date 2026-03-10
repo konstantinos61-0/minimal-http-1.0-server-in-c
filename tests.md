@@ -20,7 +20,16 @@ http://localhost:8080/letter/               // 403 Forbidden
 
 #### Raw Text Requests
 To test these requests run `telnet localhost 8080` (or the actual port). Then copy paste any of them into the telnet prompt. 
-Telnet requests must terminate with an empty line (\r\n\r\n) 
+Telnet requests must terminate with an empty line (\r\n\r\n)
+
+**Incomplete Requests**
+```
+GE                              // 400 Bad Request
+
+GET /                           // 400 Bad Request
+
+GET / HTTP
+```
 
 **Method Testing**
 ```
@@ -35,7 +44,7 @@ GETTING / HTTP/1.0              // 400 Bad Request
 
 **URI Testing**
 ```
-GET page.html HTTP/1.0          // 400 Bad Request
+GET page.html HTTP/1.0         // 400 Bad Request
 
 
 GET /path/over/256/bytes HTTP/1.0        // 400 Bad Request (replace the path with an actually long one)
@@ -46,9 +55,6 @@ GET /../ HTTP/1.0               // 403 Forbidden
 
 **Version Testing**
 ```
-GET / HTT/1.0                   // 400 Bad Request
-
-
 GET / HTTP/2.0                  // 400 Bad Request
 ```
 
@@ -67,4 +73,3 @@ foo-header: foo-value
 bar-header: bar-value. This value is very long!! Random characters follow, proceed with caution...asdu9asdhasdasdasdasdasdasdasdasdasdasdasdasdasdsaddddasdasdasygasduioaegaiuwegaiusdgoawy8dgw7aasdasdasdasdasdasdasdasdasdasdasdasdasdasdasd8dasdasdwdfwadfsadasdasdsghadawdwadasaf
                                 // 400 Bad Request
 ```
-
