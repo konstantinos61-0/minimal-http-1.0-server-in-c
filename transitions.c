@@ -34,7 +34,10 @@ char CTLs[CTLS] = {
 void method_trans(char current, enum states *state, int *n, char *method)
 {
     if (current == '\r' || current == '\n')
-        *state = FAILURE_400;
+    {
+        *state = FAILURE_400_METHOD;
+        method[*n] = '\0';
+    }
     else if (*n == 0 && (current == ' ' || current == '\t'))
         *state = METHOD; 
     else if (*n <= MAX_METHOD && (current == ' ' || current == '\t'))
@@ -51,7 +54,7 @@ void method_trans(char current, enum states *state, int *n, char *method)
     }
     // NOTE: *n will never be > MAX_METHOD as its incremented by one, and state changes to FAILURE if it reaches MAX_METHOD
     // Same goes for the other transition functions that implement the same parsing logic 
-    else if (*n >= MAX_METHOD && (current != ' ' && current != '\t'))
+    else if (*n == MAX_METHOD && (current != ' ' && current != '\t'))
     {
         method[*n] = '\0';
         *state = FAILURE_400_METHOD; // Couldn't parse a method of valid length
@@ -68,7 +71,11 @@ void method_trans(char current, enum states *state, int *n, char *method)
 void uri_trans(char current, enum states *state, int *n, char *uri, char *filename)
 {
     if (current == '\r' || current == '\n')
+    {
+        uri[*n] = '\0';
+        strcpy((uri + 1), filename);
         *state = FAILURE_400;
+    }
     else if (*n == 0 && (current == ' ' || current == '\t'))
         *state = URI;
     else if (*n <= MAX_URI && (current == ' ' || current == '\t'))
@@ -88,6 +95,7 @@ void uri_trans(char current, enum states *state, int *n, char *uri, char *filena
         {
             *state = FAILURE_400;
             *(uri) = '\0';
+            *(filename) = '\0';
             return;
         } // Reject uris not starting with '/'
         *state = URI;
@@ -98,8 +106,8 @@ void uri_trans(char current, enum states *state, int *n, char *uri, char *filena
     {
         *state = FAILURE_400;
         uri[*n] = '\0';
+        strcpy(uri + 1, filename);
     }
-
 }
 
 void vers_trans(char current, enum states *state, int *n, char *vers)
