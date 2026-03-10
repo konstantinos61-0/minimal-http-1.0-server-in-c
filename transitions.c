@@ -73,7 +73,7 @@ void uri_trans(char current, enum states *state, int *n, char *uri, char *filena
     if (current == '\r' || current == '\n')
     {
         uri[*n] = '\0';
-        strcpy((uri + 1), filename);
+        strcpy(filename, (uri + 1));
         *state = FAILURE_400;
     }
     else if (*n == 0 && (current == ' ' || current == '\t'))
@@ -106,7 +106,7 @@ void uri_trans(char current, enum states *state, int *n, char *uri, char *filena
     {
         *state = FAILURE_400;
         uri[*n] = '\0';
-        strcpy(uri + 1, filename);
+        strcpy(filename, (uri +1));
     }
 }
 

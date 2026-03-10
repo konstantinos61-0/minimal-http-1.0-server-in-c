@@ -44,6 +44,8 @@ void handle_connection(int client_sockfd, int root_dir)
     char filename_final[MAX_URI]; // Will be the filename of the actual file sent back (error template or original file depending on response code)
     char uri[MAX_URI + 1]; // +1 for null termination byte. Always remember it!!
     memset(uri, '\0', MAX_URI + 1);
+    memset(filename_final, '\0', MAX_URI);
+    memset(filename_original, '\0', MAX_URI);
 
     // buffer variables
     char res_buf[BUFF_SIZE];
@@ -125,13 +127,15 @@ void handle_connection(int client_sockfd, int root_dir)
     
     free(req_buf); // Don't need request buffering after parsing it.
     
-    // log the request headers inside a log directory.
+    // log the request headers inside a log directory
     FILE *logfile;
     if ((logfile = fopen("logs/header_logs.txt", "a")) == NULL)
         logfile = stdout; 
     log_headers(logfile, req_h_list, method, filename_original); 
     if (logfile != NULL)
         fclose(logfile); 
+
+
 
     // Set results variable according to the request parser's outcome (e.g. c200 for 200 OK)
     if (state == SUCCESS_GET)
