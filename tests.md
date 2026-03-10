@@ -28,7 +28,7 @@ GE                              // 400 Bad Request
 
 GET /                           // 400 Bad Request
 
-GET / HTTP
+GET / HTTP                      // 400 Bad Request
 ```
 
 **Method Testing**
