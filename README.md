@@ -1,11 +1,11 @@
-# HTTP/1.0 server in C (partial implementation)
+# Minimal HTTP/1.0 server in C
 ## Overview
-This project is a CLI program written in C. It is an http server program for serving static files from the host machine. More specifically, it's a partial implementation of HTTP/1.0 over TCP connections in the Internet Domain (IP Addresses) utilizing the Linux socket interface. The choice of the older version 1.0 was deliberate. I believe it balances my project's scope between it being a valuable learning experience for me while also remaining relevant to real world work. Running "make" builds the executable file named "server".  
+This project is a CLI program written in C. It is an http server program for serving static files from the host machine. More specifically, it's a partial implementation of HTTP/1.0 over TCP/IP connections, utilizing the Linux socket interface. Although minimal, it was designed with extensibility in mind (see FSM states section). The choice of the older version 1.0 was deliberate. I believe it balances my project's scope between it being a valuable learning experience for me while also remaining relevant to real world work. A makefile is included, so running `make` builds the executable file named "server".  
   
-**Video Demo**: <url>
+**Video Demo**: https://www.youtube.com/watch?v=U7P2p216XVk
 
 **Program Usage**: path/to/server root_dir [port]  
-- **server**: the executable file name produced by make
+- **server**: the executable filename produced by make
 - **root_dir**: The directory that the server will use as its root for serving files.
 - **port**: The port number that the server will bind to on the host machine. If omitted, 8080 is used by default.
 
@@ -14,11 +14,11 @@ This project is a CLI program written in C. It is an http server program for ser
 The following features from the RFC 1945 specification are implemented:
 - **methods**: GET
 - **response codes**: 200, 301, 400, 403, 404, 500, 501
-- **request headers**: Accept and store any properly formatted request headers.
+- **request headers**: Accepts and stores any properly formatted request headers.
 - **response headers**: Always respond with the headers: Content-Length, Content-Type, Connection (value=close always, as persistent connections aren't supported). Include the Location header when necessary.  
 - **URIs**: absolute path form 
 
-Server accepts HTTP/1.1 version tokens but responds with version 1.0.
+Server accepts HTTP/1.1 version tokens but always responds with version 1.0.
 
 ## Source File Organization
 
@@ -65,18 +65,20 @@ Each state indicates the http token that is currently being parsed when we're at
 - METHOD: Method is being parsed. URI: uri is being parsed, etc.
 - Exceptions:
     - CR, CR_F: byte '\r' has just been parsed
-    - LF, LF_F: byte '\n' has just been parsed. LF_F indicates that the final lf byte has been read and corresponds to a success code 200.
+    - LF, SUCCESS_GET: byte '\n' has just been parsed. SUCCESS_GET also indicates that the final LF byte has been read and parsing was successful with a corresponding GET method 
     - FAILURE_XXX: (where XXX is any possible response code implemented other than 200) Request rejected with a failure code XXX
 
+This part of the design specifically promotes feature extensibility. For example, if we wanted to implement the method HEAD, we would add a new succcess state, say 'SUCCESS_HEAD', and handle it with some modifications in the transition functions (see below). 
+
 ### transitions.c
-This file implements the behaviour of the FSM request parser via the transition functions. Each state has a corresponding transition function which encodes the logic of the state transitions for each possible state, for each possible input. The resulting bundle of functions makes up the FSM's behaviour which must adhere to the above specification. Also, some test functions used in transitions are defined. 
+This file implements the behaviour of the FSM request parser via the transition functions and some test functions. Each state has a corresponding transition function which encodes the logic of the state transitions for each possible state, for each possible input. The resulting bundle of functions makes up the FSM's behaviour which must adhere to the above specification. 
 
 ### helpers.c
 Contains utility functions used throughout all other source files, including:
 - socket setup and binding
 - request reading
-- response header contruction for any response
-- linked list utilities for header storage
+- response header construction for any response
+- linked list utilities for header storage and logging
 - MIME type detection
 - response sending, including error template serving.
 
@@ -84,8 +86,8 @@ Contains utility functions used throughout all other source files, including:
 Error logs are produced to the stderr stream. Some diagnostic information is also regularly sent to stdout throughout the program. Valgrind was used to make the program runs memcheck clean.
 
 ## Testing
+### Testing directory
+The directory `test_dir` contains several folders with html files, css, images etc. for testing purposes. The manual tests used during development are documented inside the `tests.md` file. 
 ### Headers
-The print_list function is only used for testing purposes. Specifically, it is placed right after the request parsing to print all of the headers of the request. This way it is ensured that headers are handled as promised by the specification.
+The request headers of each request are logged inside the logs/header_logs.txt file. This way it can be verified that headers are stored as documented.
 
-### Permissions
-Modify file permissions inside test_dir using chmod to test the server's 403 response.
