@@ -51,8 +51,12 @@ void method_trans(char current, enum states *state, int *n, char *method)
     }
     // NOTE: *n will never be > MAX_METHOD as its incremented by one, and state changes to FAILURE if it reaches MAX_METHOD
     // Same goes for the other transition functions that implement the same parsing logic 
-    else if (*n == MAX_METHOD && (current != ' ' && current != '\t'))
+    else if (*n >= MAX_METHOD && (current != ' ' && current != '\t'))
+    {
+        method[*n] = '\0';
         *state = FAILURE_400_METHOD; // Couldn't parse a method of valid length
+    }
+
     else // save the current input as output in method string
     { 
         *state = METHOD;
@@ -90,8 +94,12 @@ void uri_trans(char current, enum states *state, int *n, char *uri, char *filena
         uri[*n] = current;
         (*n)++;
     }
-    else // Coulnd't parse a uri of valid length
+    else if (*n == MAX_URI && (current != ' ' && current != '\t')) // Coulnd't parse a uri of valid length
+    {
         *state = FAILURE_400;
+        uri[*n] = '\0';
+    }
+
 }
 
 void vers_trans(char current, enum states *state, int *n, char *vers)
