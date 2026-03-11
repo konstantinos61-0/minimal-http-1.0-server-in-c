@@ -1,7 +1,7 @@
 # Minimal HTTP/1.0 server in C
 ## Overview
-This project is a CLI program written in C. It is an http server program for serving static files from the host machine. More specifically, it's a partial implementation of HTTP/1.0 over TCP/IP connections, utilizing the Linux socket interface. Although minimal, it was designed with extensibility in mind (see FSM states section). The choice of the older version 1.0 was deliberate. I believe it balances my project's scope between it being a valuable learning experience for me while also remaining relevant to real world work. A makefile is included, so running `make` builds the executable file named "server".  
-  
+This project is a CLI program written in C. It is an http server program for serving static files from the host machine. More specifically, it's a partial implementation of HTTP/1.0 over TCP/IP connections, utilizing the Linux socket interface. Although minimal, it was designed with extensibility in mind (see FSM states section). The choice of the older version 1.0 was deliberate. I believe it balances my project's scope between it being a valuable learning experience for me while also remaining relevant to real world work. A makefile is included, so running `make` builds the executable file named "server".
+
 **Video Demo**: https://www.youtube.com/watch?v=U7P2p216XVk
 
 **Program Usage**: path/to/server root_dir [port]  
@@ -90,4 +90,16 @@ Error logs are produced to the stderr stream. Some diagnostic information is als
 The directory `test_dir` contains several folders with html files, css, images etc. for testing purposes. The manual tests used during development are documented inside the `tests.md` file. 
 ### Headers
 The request headers of each request are logged inside the logs/header_logs.txt file. This way it can be verified that headers are stored as documented.
+
+## What I learned
+Working on this project, I learned a lot about advanced programming in the Linux environment, including system calls and the standard C library. I also learned the fundamentals of computer networks, including the layered network model and protocols such as TCP and HTTP.
+### References
+- Stevens, W.R. and Rago, S.A. (2013) *Advanced Programming in the UNIX Environment*. 3rd edn. Addison-Wesley Professional Computing Series.
+- Kernighan, B.W. and Ritchie, D.M. (1988) *The C Programming Language.* 2nd edn. Prentice Hall Software Series.
+- Brian “Beej Jorgensen” Hall (2026) *Beej's Guide to Network Programming* v3.3.0.
+- Kurose, J. and Ross, K. (2016) *Computer Networking: A Top-Down Approach* 7th edn. Pearson.
+- MDN contributors (2025) *HTTP: Hypertext Transfer Protocol* Available at: https://developer.mozilla.org/en-US/docs/Web/HTTP (accessed 11 March 2026)
+- Cryan M. (2004) *Lecture Notes. INF1A: Informatics 1 - Introduction to Computation.* University of Edinburgh. Available at: https://www.inf.ed.ac.uk/teaching/courses/inf1/cl/notes/ (accessed 11 March 2026)
+- IETF (1996) *RFC 1945: Hypertext Transfer Protocol -- HTTP/1.0* Available at: https://datatracker.ietf.org/doc/html/rfc1945 (accessed 11 March 2026)
+
 
