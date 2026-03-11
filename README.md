@@ -89,7 +89,7 @@ Error logs are produced to the stderr stream. Some diagnostic information is als
 ### Testing directory
 The directory `test_dir` contains several folders with html files, css, images etc. for testing purposes. The manual tests used during development are documented inside the `tests.md` file. 
 ### Headers
-The request headers of each request are logged inside the logs/header_logs.txt file. This way it can be verified that headers are stored as documented.
+The request headers of each request are logged inside the `logs/header_logs.txt` file. This way it can be verified that headers are stored as documented.
 
 ## What I learned
 Working on this project, I learned a lot about advanced programming in the Linux environment, including system calls and the standard C library. I also learned the fundamentals of computer networks, including the layered network model and protocols such as TCP and HTTP.
