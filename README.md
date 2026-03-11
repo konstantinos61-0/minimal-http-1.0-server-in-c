@@ -98,8 +98,8 @@ Working on this project, I learned a lot about advanced programming in the Linux
 - Kernighan, B.W. and Ritchie, D.M. (1988) *The C Programming Language.* 2nd edn. Prentice Hall Software Series.
 - Brian “Beej Jorgensen” Hall (2026) *Beej's Guide to Network Programming* v3.3.0.
 - Kurose, J. and Ross, K. (2016) *Computer Networking: A Top-Down Approach* 7th edn. Pearson.
-- MDN contributors (2025) *HTTP: Hypertext Transfer Protocol* Available at: https://developer.mozilla.org/en-US/docs/Web/HTTP (accessed 11 March 2026)
+- MDN contributors (2025) *HTTP: Hypertext Transfer Protocol.* Available at: https://developer.mozilla.org/en-US/docs/Web/HTTP (accessed 11 March 2026)
 - Cryan M. (2004) *Lecture Notes. INF1A: Informatics 1 - Introduction to Computation.* University of Edinburgh. Available at: https://www.inf.ed.ac.uk/teaching/courses/inf1/cl/notes/ (accessed 11 March 2026)
-- IETF (1996) *RFC 1945: Hypertext Transfer Protocol -- HTTP/1.0* Available at: https://datatracker.ietf.org/doc/html/rfc1945 (accessed 11 March 2026)
+- IETF (1996) *RFC 1945: Hypertext Transfer Protocol -- HTTP/1.0.* Available at: https://datatracker.ietf.org/doc/html/rfc1945 (accessed 11 March 2026)
 
 
