@@ -92,7 +92,7 @@ The directory `test_dir` contains several folders with html files, css, images e
 The request headers of each request are logged inside the `logs/header_logs.txt` file. This way it can be verified that headers are stored as documented.
 
 ## What I learned
-Working on this project, I learned a lot about advanced programming in the Linux environment, including system calls and the standard C library. I also learned the fundamentals of computer networks, including the layered network model and protocols such as TCP and HTTP.
+Working on this project, I learned a lot about advanced programming in the Linux environment, including system calls and the standard C library. I also learned the fundamentals of computer networks, including the layered network model and protocols such as TCP/IP and HTTP.
 ### References
 - Stevens, W.R. and Rago, S.A. (2013) *Advanced Programming in the UNIX Environment*. 3rd edn. Addison-Wesley Professional Computing Series.
 - Kernighan, B.W. and Ritchie, D.M. (1988) *The C Programming Language.* 2nd edn. Prentice Hall Software Series.
